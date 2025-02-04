@@ -99,6 +99,7 @@ permission(?Policy,?Target,?Assigner,?Assignee,?Action) :-
 
 prohibition(?Policy,?Target,?Assigner,?Assignee,?Action) :-
     hasBody(?Policy,?Type,?Body) ,
+    valid_constraint(?Body) ,
     ?Type = odrl:prohibition ,
     tr(?Body,odrl:assigner,?Assigner) ,
     tr(?Body,odrl:assignee,?Assignee) ,
@@ -107,6 +108,7 @@ prohibition(?Policy,?Target,?Assigner,?Assignee,?Action) :-
 
 obligation(?Policy,?Target,?Assigner,?Assignee,?Action) :-
     hasBody(?Policy,?Type,?Body) ,
+    valid_constraint(?Body) ,
     ?Type = odrl:obligation ,
     tr(?Body,odrl:assigner,?Assigner) ,
     tr(?Body,odrl:assignee,?Assignee) ,
