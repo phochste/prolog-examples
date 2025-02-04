@@ -1,0 +1,26 @@
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix ex: <http://example.com/> .
+
+ex:policy:1010 a odrl:Set ;
+   odrl:permission [
+       odrl:assigner ex:Bob ;
+       odrl:assignee ex:Alice ;
+       odrl:action odrl:use , ex:resell ;
+       odrl:target ex:asset:9898.movie
+     ] .
+
+ex:policy:1011 a odrl:Set ;
+    odrl:prohibition [
+        odrl:assigner ex:Bob ;
+        odrl:assignee ex:Alice ;
+        odrl:action odrl:use ;
+        odrl:target ex:asset:9898.movie
+      ] .
+
+ex:policy:1012 a odrl:Set ;
+    odrl:obligation [
+        odrl:action ex:signContract ;
+        odrl:assigner ex:Bob ; 
+        odrl:assignee ex:Alice ; 
+        odrl:target ex:contract
+    ] .
