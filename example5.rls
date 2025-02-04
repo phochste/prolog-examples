@@ -7,7 +7,7 @@
 
 policyClass(odrl:Set) .
 policyClass(odrl:Offer) .
-policyClass(odrl:Aggreement) .
+policyClass(odrl:Agreement) .
 
 policyType(odrl:permission) .
 policyType(odrl:prohibition) .
@@ -35,20 +35,43 @@ prohibition(?Policy,?Target,?Assigner,?Assignee,?Action) :-
     tr(?Body,odrl:action,?Action) ,
     tr(?Body,odrl:target,?Target) .
 
+obligation(?Policy,?Target,?Assigner,?Assignee,?Action) :-
+    hasBody(?Policy,?Type,?Body) ,
+    ?Type = odrl:obligation ,
+    tr(?Body,odrl:assigner,?Assigner) ,
+    tr(?Body,odrl:assignee,?Assignee) ,
+    tr(?Body,odrl:action,?Action) ,
+    tr(?Body,odrl:target,?Target) .
+
 quad(deo:defaultgraph,deo:box,rdf:rtype,deo:ModalOperator) .
 
-quad(deo:defaultgraph,!key1,rdf:type,log:onNegativeSurface) ,
-    quad(!key1,?Policy,deo:box,!key2) ,
-    quad(!key1,!key2,rdf:type,log:onNegativeSurface) ,
-    quad(!key2,?Assignee,?Action,?Target) ,
+quad(deo:defaultgraph,?ROI,rdf:type,log:onNegativeSurface) ,
+    quad(?ROI,?Policy,deo:box,?RII) ,
+    quad(?ROI,?RII,rdf:type,log:onNegativeSurface) ,
+    quad(?RII,?Assignee,?Action,?Target) 
     :-
-    permission(?Policy,?Target,?Assigner,?Assignee,?Action) .
+    permission(?Policy,?Target,?Assigner,?Assignee,?Action) ,
+    ?RO = CONCAT(STR(?Policy),"_outer") ,
+    ?RI = CONCAT(STR(?Policy),"_inner") , 
+    ?ROI = IRI(?RO) ,
+    ?RII = IRI(?RI) .
 
-quad(deo:defaultgraph,?Policy,deo:box,!key1) ,
-    quad(!key1,!key2,rdf:type,log:onNegativeSurface) ,
-    quad(!key2,?Assignee,?Action,?Target) ,
+quad(deo:defaultgraph,?Policy,deo:box,?ROI) ,
+    quad(?ROI,?RII,rdf:type,log:onNegativeSurface) ,
+    quad(?RII,?Assignee,?Action,?Target) 
     :-
-    prohibition(?Policy,?Target,?Assigner,?Assignee,?Action) .
+    prohibition(?Policy,?Target,?Assigner,?Assignee,?Action) ,
+    ?RO = CONCAT(STR(?Policy),"_outer") ,
+    ?RI = CONCAT(STR(?Policy),"_inner") , 
+    ?ROI = IRI(?RO) ,
+    ?RII = IRI(?RI) .
+
+quad(deo:defaultgraph,?Policy,deo:box,?RI) ,
+    quad(?RI,?Assignee,?Action,?Target) 
+    :-
+    obligation(?Policy,?Target,?Assigner,?Assignee,?Action) ,
+    ?R = CONCAT(STR(?Policy),"_outer") ,
+    ?RI = IRI(?R) .
 
 @export tr :- turtle{resource="example5.ttl"} .
 @export quad :- nquads{resource="example5.nq"} .
