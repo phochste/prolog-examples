@@ -4,5 +4,5 @@
 
 ## Requirements
 
-A recent [release](https://github.com/knowsys/nemo/releases) of Nemo installed in your your PATH.
-
+- A recent [release](https://github.com/knowsys/nemo/releases) of Nemo installed in your your PATH.
+- Jena `riot` (e.g. `brew install jena`)
