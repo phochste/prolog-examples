@@ -1,0 +1,34 @@
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix deo: <https://github.com/KNowledgeOnWebScale/n3s-policy-consistency-checker/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+@import tr :- turtle{resource = "data/policy1.ttl"} .
+
+policyClass(odrl:Set) .
+policyClass(odrl:Offer) .
+policyClass(odrl:Aggreement) .
+
+policyType(odrl:permission) .
+policyType(odrl:prohibition) .
+policyType(odrl:obligation) .
+
+hasBody(?Policy,?Type,?Body) :-
+    tr(?Policy,rdf:type,?What) ,
+    policyClass(?What) ,
+    policyType(?Type) ,
+    tr(?Policy,?Type,?Body) .
+
+permission(?Policy,?Target,?Assigner,?Assignee) :-
+    hasBody(?Policy,?Type,?Body) ,
+    ?Type = odrl:permission ,
+    tr(?Body,odrl:assigner,?Assigner) ,
+    tr(?Body,odrl:assignee,?Assignee) ,
+    tr(?Body,odrl:target,?Target) .
+
+tr(!scope,rdf:type,deo:Permission) , 
+    tr(!scope, deo:target, ?Target) ,
+    tr(!scope, deo:assigner, ?Assigner) ,
+    tr(!scope, deo:assignee, ?Assignee ):-
+    permission(?Policy,?Target,?Assigner,?Assignee) .
+
+@export tr :- turtle{resource="example5.ttl"} .
