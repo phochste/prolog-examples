@@ -19,8 +19,78 @@ hasBody(?Policy,?Type,?Body) :-
     policyType(?Type) ,
     tr(?Policy,?Type,?Body) .
 
+bodyWithConstraint(?Body) :-
+    tr(?Body,odrl:constraint,_) .
+
+bodyWithoutConstraint(?Body) :-
+    hasBody(?Body,odrl:target,_) ,
+    ~bodyWithConstraint(?Body) .
+
+condition(?Body,?Subject) :-
+    tr(?Body,odrl:constraint,?Constraint) ,
+    tr(?Constraint,odrl:operator,?Op) ,
+    EQUALITY(?Op,"gt") ,
+    tr(?Constraint,odrl:leftOperand,?Predicate) ,
+    tr(?Constraint,odrl:rightOperand,?Required) ,
+    tr(?Subject,?Predicate,?Value) ,
+    NUMGREATER(?Value,?Required) .
+
+condition(?Body,?Subject) :-
+    tr(?Body,odrl:constraint,?Constraint) ,
+    tr(?Constraint,odrl:operator,?Op) ,
+    EQUALITY(?Op,"lt") ,
+    tr(?Constraint,odrl:leftOperand,?Predicate) ,
+    tr(?Constraint,odrl:rightOperand,?Required) ,
+    tr(?Subject,?Predicate,?Value) ,
+    NUMLESS(?Value,?Required) .
+
+condition(?Body,?Subject) :-
+    tr(?Body,odrl:constraint,?Constraint) ,
+    tr(?Constraint,odrl:operator,?Op) ,
+    EQUALITY(?Op,"gteq") ,
+    tr(?Constraint,odrl:leftOperand,?Predicate) ,
+    tr(?Constraint,odrl:rightOperand,?Required) ,
+    tr(?Subject,?Predicate,?Value) ,
+    NUMGREATEREQ(?Value,?Required) .
+
+condition(?Body,?Subject) :-
+    tr(?Body,odrl:constraint,?Constraint) ,
+    tr(?Constraint,odrl:operator,?Op) ,
+    EQUALITY(?Op,"lteq") ,
+    tr(?Constraint,odrl:leftOperand,?Predicate) ,
+    tr(?Constraint,odrl:rightOperand,?Required) ,
+    tr(?Subject,?Predicate,?Value) ,
+    NUMLESSEQ(?Value,?Required) .
+
+condition(?Body,?Subject) :-
+    tr(?Body,odrl:constraint,?Constraint) ,
+    tr(?Constraint,odrl:operator,?Op) ,
+    EQUALITY(?Op,"eq") ,
+    tr(?Constraint,odrl:leftOperand,?Predicate) ,
+    tr(?Constraint,odrl:rightOperand,?Required) ,
+    tr(?Subject,?Predicate,?Value) ,
+    EQUALITY(?Value,?Required) .
+
+condition(?Body,?Subject) :-
+    tr(?Body,odrl:constraint,?Constraint) ,
+    tr(?Constraint,odrl:operator,?Op) ,
+    EQUALITY(?Op,"neq") ,
+    tr(?Constraint,odrl:leftOperand,?Predicate) ,
+    tr(?Constraint,odrl:rightOperand,?Required) ,
+    tr(?Subject,?Predicate,?Value) ,
+    UNEQUALITY(?Value,?Required) .
+
+valid_constraint(?Body) :-
+    bodyWithoutConstraint(?Body) .
+
+valid_constraint(?Body) :-
+    bodyWithConstraint(?Body) ,
+    tr(?Body,odrl:assignee,?Assignee) , 
+    condition(?Body,?Assignee) .
+
 permission(?Policy,?Target,?Assigner,?Assignee,?Action) :-
     hasBody(?Policy,?Type,?Body) ,
+    valid_constraint(?Body) ,
     ?Type = odrl:permission ,
     tr(?Body,odrl:assigner,?Assigner) ,
     tr(?Body,odrl:assignee,?Assignee) ,
