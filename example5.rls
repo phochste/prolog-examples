@@ -1,5 +1,6 @@
 @prefix odrl: <http://www.w3.org/ns/odrl/2/> .
 @prefix deo: <https://github.com/KNowledgeOnWebScale/n3s-policy-consistency-checker/> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#>.
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 @import tr :- turtle{resource = "data/policy1.ttl"} .
@@ -18,17 +19,36 @@ hasBody(?Policy,?Type,?Body) :-
     policyType(?Type) ,
     tr(?Policy,?Type,?Body) .
 
-permission(?Policy,?Target,?Assigner,?Assignee) :-
+permission(?Policy,?Target,?Assigner,?Assignee,?Action) :-
     hasBody(?Policy,?Type,?Body) ,
     ?Type = odrl:permission ,
     tr(?Body,odrl:assigner,?Assigner) ,
     tr(?Body,odrl:assignee,?Assignee) ,
+    tr(?Body,odrl:action,?Action) ,
     tr(?Body,odrl:target,?Target) .
 
-tr(!scope,rdf:type,deo:Permission) , 
-    tr(!scope, deo:target, ?Target) ,
-    tr(!scope, deo:assigner, ?Assigner) ,
-    tr(!scope, deo:assignee, ?Assignee ):-
-    permission(?Policy,?Target,?Assigner,?Assignee) .
+prohibition(?Policy,?Target,?Assigner,?Assignee,?Action) :-
+    hasBody(?Policy,?Type,?Body) ,
+    ?Type = odrl:prohibition ,
+    tr(?Body,odrl:assigner,?Assigner) ,
+    tr(?Body,odrl:assignee,?Assignee) ,
+    tr(?Body,odrl:action,?Action) ,
+    tr(?Body,odrl:target,?Target) .
+
+quad(deo:defaultgraph,deo:box,rdf:rtype,deo:ModalOperator) .
+
+quad(deo:defaultgraph,!key1,rdf:type,log:onNegativeSurface) ,
+    quad(!key1,?Policy,deo:box,!key2) ,
+    quad(!key1,!key2,rdf:type,log:onNegativeSurface) ,
+    quad(!key2,?Assignee,?Action,?Target) ,
+    :-
+    permission(?Policy,?Target,?Assigner,?Assignee,?Action) .
+
+quad(deo:defaultgraph,?Policy,deo:box,!key1) ,
+    quad(!key1,!key2,rdf:type,log:onNegativeSurface) ,
+    quad(!key2,?Assignee,?Action,?Target) ,
+    :-
+    prohibition(?Policy,?Target,?Assigner,?Assignee,?Action) .
 
 @export tr :- turtle{resource="example5.ttl"} .
+@export quad :- nquads{resource="example5.nq"} .
