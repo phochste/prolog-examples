@@ -3,3 +3,5 @@
 
 :Socrates a :Human .
 :Socrates rdfs:subClassOf :Mortal .
+
+:Socrates :name "Socrates" .
