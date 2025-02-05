@@ -13,7 +13,6 @@ tr(S,'http://example.org/ns#nameLength',L) :-
     string_length(N,L).
 
 write_turtle_file(File) :-
-    rdf_retractall(_, _, _),  % Clear RDF store before writing
     forall(tr(S, P, O), rdf_assert(S, P, O)),
     rdf_save_turtle(File, []).
 

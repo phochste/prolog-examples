@@ -15,7 +15,6 @@ tr(X,'http://example.org/ns#parent',Y) :-
     tr(X,'http://example.org/ns#father',Y) . 
 
 write_turtle_file(File) :-
-    rdf_retractall(_, _, _),  % Clear RDF store before writing
     forall(tr(S, P, O), rdf_assert(S, P, O)),
     rdf_save_turtle(File, []).
 

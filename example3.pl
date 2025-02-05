@@ -13,7 +13,6 @@ tr(S,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',B) :-
     tr(S,'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',A) .
 
 write_turtle_file(File) :-
-    rdf_retractall(_, _, _),  % Clear RDF store before writing
     forall(tr(S, P, O), rdf_assert(S, P, O)),
     rdf_save_turtle(File, []).
 
