@@ -1,8 +1,8 @@
-# Nemo Examples
+# Prolog Examples
 
-[Nemo](https://knowsys.github.io/nemo-doc/) is a Graph Rule Engine. In this repository I provide some examples how to process RDF data.
+In this repository I provide some examples how to process RDF data in SWI-Prolog.
 
 ## Requirements
 
-- A recent [release](https://github.com/knowsys/nemo/releases) of Nemo installed in your your PATH.
+- A recent of [SWIPL](https://www.swi-prolog.org) installed in your your PATH.
 - Jena `riot` (e.g. `brew install jena`)

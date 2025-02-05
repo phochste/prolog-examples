@@ -1,15 +1,12 @@
 .PHONY: clean
 
-RULES = $(wildcard *.rls)
-RULES_OUT = $(patsubst %.rls,%.ttl,$(RULES))
+RULES = $(wildcard *.pl)
+RULES_OUT = $(patsubst %.pl,%.ttl,$(RULES))
 
-all: $(RULES_OUT) example5.trig
+all: $(RULES_OUT) 
 
-%.ttl : %.rls
-	nmo --overwrite-results -D . $*.rls
-
-example5.trig : example5.nq
-	riot --syntax=nquads --out=trig example5.nq > example5.trig
+%.ttl : %.pl
+	swipl -g run -t run $*.pl
 
 clean:
-	rm *.ttl *.nq *.trig
+	rm *.ttl

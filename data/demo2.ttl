@@ -1,0 +1,5 @@
+@prefix : <http://example.org/ns#> .
+
+:alice :father :bob .
+:bob :mother :carla .
+:bob :father :darius .
