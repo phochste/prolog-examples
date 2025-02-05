@@ -2,17 +2,22 @@
 :- use_module(library(semweb/turtle)).
 :- use_module(library(when)).
 :- dynamic(tr/3).
+:- dynamic(defaultGraph/1).
 
 read_turtle_file(File) :-
     rdf_load(File, [format(turtle)]),
     forall(rdf(S, P, O),asserta(tr(S,P,O))),
+    absolute_file_name(File,Abs),
+    atom_concat('file://',Abs,DefaultGraph),
+    asserta(defaultGraph(DefaultGraph)),
     rdf_retractall(_, _, _).
 
 write_turtle_file(File) :-
     forall(
         quad(G, S, P, O), (
             ( G = 'urn:deo:defaultgraph' ->
-                rdf_assert(S, P, O) ;
+                defaultGraph(DG) ,
+                rdf_assert(S, P, O, DG) ;
                 rdf_assert(S, P, O, G)
             )
         )
@@ -40,8 +45,71 @@ bodyWithoutConstraint(Body) :-
     tr(Body,'http://www.w3.org/ns/odrl/2/target',_) ,
     \+ bodyWithConstraint(Body) .
 
+% begin constaints
+
+condition(Body,Subject) :-
+    tr(Body,'http://www.w3.org/ns/odrl/2/constraint',Constraint) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/operator',Op^^_) ,
+    Op = "gt" ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/leftOperand',Predicate) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/rightOperand',Required^^_) ,
+    tr(Subject,Predicate,Value^^_) ,
+    Value @> Required .
+
+condition(Body,Subject) :-
+    tr(Body,'http://www.w3.org/ns/odrl/2/constraint',Constraint) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/operator',Op^^_) ,
+    Op = "lt" ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/leftOperand',Predicate) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/rightOperand',Required^^_) ,
+    tr(Subject,Predicate,Value^^_) ,
+    Value @< Required .
+
+condition(Body,Subject) :-
+    tr(Body,'http://www.w3.org/ns/odrl/2/constraint',Constraint) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/operator',Op^^_) ,
+    Op = "gteq" ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/leftOperand',Predicate) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/rightOperand',Required^^_) ,
+    tr(Subject,Predicate,Value^^_) ,
+    Value @>= Required .
+
+condition(Body,Subject) :-
+    tr(Body,'http://www.w3.org/ns/odrl/2/constraint',Constraint) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/operator',Op^^_) ,
+    Op = "lteq" ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/leftOperand',Predicate) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/rightOperand',Required^^_) ,
+    tr(Subject,Predicate,Value^^_) ,
+    Value @=< Required .
+
+condition(Body,Subject) :-
+    tr(Body,'http://www.w3.org/ns/odrl/2/constraint',Constraint) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/operator',Op^^_) ,
+    Op = "eq" ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/leftOperand',Predicate) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/rightOperand',Required^^_) ,
+    tr(Subject,Predicate,Value^^_) ,
+    Value =@= Required .
+
+condition(Body,Subject) :-
+    tr(Body,'http://www.w3.org/ns/odrl/2/constraint',Constraint) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/operator',Op^^_) ,
+    Op = "neq" ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/leftOperand',Predicate) ,
+    tr(Constraint,'http://www.w3.org/ns/odrl/2/rightOperand',Required^^_) ,
+    tr(Subject,Predicate,Value^^_) ,
+    Value \=@= Required .
+
+% end constraints
+
 valid_constraint(Body) :-
     bodyWithoutConstraint(Body) .
+
+valid_constraint(Body) :-
+    bodyWithConstraint(Body) ,
+    tr(Body,'http://www.w3.org/ns/odrl/2/assignee',Assignee) , 
+    condition(Body,Assignee) .
 
 permission(Policy,Target,Assigner,Assignee,Action) :-
     hasBody(Policy,Type,Body) ,
