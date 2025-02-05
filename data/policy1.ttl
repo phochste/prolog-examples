@@ -9,25 +9,25 @@ ex:policy:1010 a odrl:Set ;
        odrl:assignee ex:Alice ;
        odrl:action odrl:use , ex:resell ;
        odrl:target ex:asset:9898.movie ;
-       odrl:constraint [
-            odrl:leftOperand ex:age ;
-            odrl:operator "gt" ;
-            odrl:rightOperand 18
-       ]
+       #odrl:constraint [
+       #     odrl:leftOperand ex:age ;
+       #     odrl:operator "gt" ;
+       #     odrl:rightOperand 18
+       #]
      ] .
 
-# ex:policy:1011 a odrl:Set ;
-#     odrl:prohibition [
-#         odrl:assigner ex:Bob ;
-#         odrl:assignee ex:Alice ;
-#         odrl:action odrl:use ;
-#         odrl:target ex:asset:9898.movie
-#       ] .
+ex:policy:1011 a odrl:Set ;
+     odrl:prohibition [
+         odrl:assigner ex:Bob ;
+         odrl:assignee ex:Alice ;
+         odrl:action odrl:use ;
+         odrl:target ex:asset:9898.movie
+     ] .
 
-# ex:policy:1012 a odrl:Set ;
-#     odrl:obligation [
-#         odrl:action ex:signContract ;
-#         odrl:assigner ex:Bob ; 
-#         odrl:assignee ex:Alice ; 
-#         odrl:target ex:contract
-#     ] .
+ex:policy:1012 a odrl:Set ;
+     odrl:obligation [
+         odrl:action ex:signContract ;
+         odrl:assigner ex:Bob ; 
+         odrl:assignee ex:Alice ; 
+         odrl:target ex:contract
+     ] .

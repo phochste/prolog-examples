@@ -9,4 +9,4 @@ all: $(RULES_OUT)
 	swipl -g run -t run $*.pl
 
 clean:
-	rm *.ttl
+	rm *.ttl *.trig
