@@ -1,3 +1,5 @@
+We moved to https://codeberg.org/phochste/prolog-examples
+
 # Prolog Examples
 
 In this repository I provide some examples how to process RDF data in SWI-Prolog.
